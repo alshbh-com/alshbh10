@@ -7,6 +7,7 @@ import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { toast } from "sonner";
 import { CheckCircle2, Loader2 } from "lucide-react";
+import { track } from "@/lib/analytics";
 
 const schema = z.object({
   name: z.string().trim().min(2, "الاسم قصير جداً").max(100),
@@ -56,6 +57,7 @@ export const LeadForm = forwardRef<HTMLDivElement, { selected?: string }>(({ sel
         user_agent: navigator.userAgent,
       });
       if (error) throw error;
+      track("form_submit", { systemSlug: parsed.data.system_slug });
       setDone(true);
       setName(""); setWhatsapp(""); setSystemSlug("");
       toast.success("تم استلام طلبك بنجاح!");

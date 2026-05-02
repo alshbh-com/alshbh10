@@ -1,4 +1,5 @@
-import { useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
+import { track } from "@/lib/analytics";
 import { Navbar } from "@/components/Navbar";
 import { Hero } from "@/components/Hero";
 import { VideoSection } from "@/components/VideoSection";
@@ -12,8 +13,13 @@ const Index = () => {
   const formRef = useRef<HTMLDivElement>(null);
   const [selected, setSelected] = useState<string>("");
 
+  useEffect(() => {
+    track("page_view", { oncePerSession: true });
+  }, []);
+
   const scrollToForm = (slug?: string) => {
     if (slug) setSelected(slug);
+    track("form_open", { systemSlug: slug, oncePerSession: true });
     setTimeout(() => formRef.current?.scrollIntoView({ behavior: "smooth", block: "start" }), 50);
   };
 
