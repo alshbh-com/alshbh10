@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { PlayCircle } from "lucide-react";
+import { track } from "@/lib/analytics";
 
 export const VideoSection = () => {
   const [videoUrl, setVideoUrl] = useState<string>("");
@@ -46,6 +47,7 @@ export const VideoSection = () => {
                 controls
                 playsInline
                 preload="metadata"
+                onPlay={() => track("video_play", { oncePerSession: true })}
                 className="absolute inset-0 w-full h-full object-contain bg-black"
               />
             ) : videoUrl ? (
