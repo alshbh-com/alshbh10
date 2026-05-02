@@ -5,6 +5,11 @@ import { Toaster } from "@/components/ui/toaster";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import Index from "./pages/Index.tsx";
 import NotFound from "./pages/NotFound.tsx";
+import AdminLogin from "./pages/AdminLogin.tsx";
+import AdminLayout from "./pages/admin/AdminLayout.tsx";
+import AdminStats from "./pages/admin/AdminStats.tsx";
+import AdminLeads from "./pages/admin/AdminLeads.tsx";
+import AdminSettings from "./pages/admin/AdminSettings.tsx";
 
 const queryClient = new QueryClient();
 
@@ -12,11 +17,16 @@ const App = () => (
   <QueryClientProvider client={queryClient}>
     <TooltipProvider>
       <Toaster />
-      <Sonner />
+      <Sonner position="top-center" richColors />
       <BrowserRouter>
         <Routes>
           <Route path="/" element={<Index />} />
-          {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
+          <Route path="/admin" element={<AdminLogin />} />
+          <Route path="/admin/dashboard" element={<AdminLayout />}>
+            <Route index element={<AdminStats />} />
+            <Route path="leads" element={<AdminLeads />} />
+            <Route path="settings" element={<AdminSettings />} />
+          </Route>
           <Route path="*" element={<NotFound />} />
         </Routes>
       </BrowserRouter>
