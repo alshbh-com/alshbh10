@@ -38,7 +38,7 @@ export const Hero = ({ onCTA }: { onCTA: () => void }) => {
 
             <div className="space-y-3">
               <p className="text-sm text-muted-foreground">العرض ينتهي خلال:</p>
-              <Countdown hours={48} />
+              <Countdown hours={72} />
             </div>
           </div>
         </div>
