@@ -34,6 +34,7 @@ const AdminSettings = () => {
       ]);
       if (s.data) {
         setVideoUrl(s.data.find((x) => x.key === "video_url")?.value || "");
+        setVideoFileUrl(s.data.find((x) => x.key === "video_file_url")?.value || "");
         setWhatsapp(s.data.find((x) => x.key === "whatsapp_number")?.value || "");
       }
       if (sys.data) setSystems(sys.data as any);
@@ -46,9 +47,43 @@ const AdminSettings = () => {
     setSaving(true);
     const { error: e1 } = await supabase.from("site_settings").upsert({ key: "video_url", value: videoUrl });
     const { error: e2 } = await supabase.from("site_settings").upsert({ key: "whatsapp_number", value: whatsapp });
+    const { error: e3 } = await supabase.from("site_settings").upsert({ key: "video_file_url", value: videoFileUrl });
     setSaving(false);
-    if (e1 || e2) toast.error("فشل الحفظ");
+    if (e1 || e2 || e3) toast.error("فشل الحفظ");
     else toast.success("تم حفظ الإعدادات");
+  };
+
+  const handleVideoUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    if (file.size > 524288000) {
+      toast.error("الحد الأقصى 500 ميجا");
+      return;
+    }
+    setUploading(true);
+    const ext = file.name.split(".").pop();
+    const path = `promo-${Date.now()}.${ext}`;
+    const { error } = await supabase.storage.from("videos").upload(path, file, {
+      cacheControl: "3600",
+      upsert: false,
+      contentType: file.type,
+    });
+    if (error) {
+      setUploading(false);
+      toast.error("فشل الرفع: " + error.message);
+      return;
+    }
+    const { data } = supabase.storage.from("videos").getPublicUrl(path);
+    setVideoFileUrl(data.publicUrl);
+    await supabase.from("site_settings").upsert({ key: "video_file_url", value: data.publicUrl });
+    setUploading(false);
+    toast.success("تم رفع الفيديو ✓");
+  };
+
+  const removeVideoFile = async () => {
+    setVideoFileUrl("");
+    await supabase.from("site_settings").upsert({ key: "video_file_url", value: "" });
+    toast.success("تم حذف الفيديو");
   };
 
   const saveSystem = async (sys: System) => {
