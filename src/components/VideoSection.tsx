@@ -4,17 +4,22 @@ import { PlayCircle } from "lucide-react";
 
 export const VideoSection = () => {
   const [videoUrl, setVideoUrl] = useState<string>("");
+  const [videoFile, setVideoFile] = useState<string>("");
 
   useEffect(() => {
     supabase
       .from("site_settings")
-      .select("value")
-      .eq("key", "video_url")
-      .maybeSingle()
+      .select("key,value")
+      .in("key", ["video_url", "video_file_url"])
       .then(({ data }) => {
-        if (data?.value) setVideoUrl(data.value);
+        if (!data) return;
+        setVideoUrl(data.find((d) => d.key === "video_url")?.value || "");
+        setVideoFile(data.find((d) => d.key === "video_file_url")?.value || "");
       });
   }, []);
+
+  // Prefer uploaded file over YouTube
+  const useFile = !!videoFile;
 
   return (
     <section className="py-16 sm:py-24">
@@ -31,7 +36,15 @@ export const VideoSection = () => {
 
         <div className="max-w-4xl mx-auto">
           <div className="relative aspect-video rounded-2xl overflow-hidden glow-border bg-card shadow-card-soft">
-            {videoUrl ? (
+            {useFile ? (
+              <video
+                src={videoFile}
+                controls
+                playsInline
+                preload="metadata"
+                className="absolute inset-0 w-full h-full object-cover bg-black"
+              />
+            ) : videoUrl ? (
               <iframe
                 src={videoUrl}
                 title="عرض السيستم"
