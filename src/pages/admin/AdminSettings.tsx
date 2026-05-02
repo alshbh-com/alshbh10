@@ -117,10 +117,34 @@ const AdminSettings = () => {
       <div className="bg-gradient-card rounded-2xl p-6 border border-border/50 space-y-4">
         <h2 className="font-black text-lg">إعدادات عامة</h2>
 
+        <div className="space-y-3 p-4 rounded-xl bg-background/50 border border-primary/30">
+          <Label className="flex items-center gap-2 font-bold"><Upload className="w-4 h-4 text-primary" /> رفع فيديو مباشر (الأولوية على YouTube)</Label>
+          {videoFileUrl && (
+            <div className="space-y-2">
+              <video src={videoFileUrl} controls className="w-full rounded-lg max-h-64 bg-black" />
+              <Button onClick={removeVideoFile} variant="destructive" size="sm">
+                <Trash2 className="w-4 h-4 ml-2" /> حذف الفيديو الحالي
+              </Button>
+            </div>
+          )}
+          <div>
+            <Input
+              type="file"
+              accept="video/mp4,video/webm,video/quicktime,video/ogg"
+              onChange={handleVideoUpload}
+              disabled={uploading}
+              className="cursor-pointer"
+            />
+            <p className="text-xs text-muted-foreground mt-1">
+              {uploading ? "جاري الرفع..." : "MP4 / WebM / MOV — حتى 500 ميجا"}
+            </p>
+          </div>
+        </div>
+
         <div>
-          <Label className="mb-2 flex items-center gap-2"><Video className="w-4 h-4" /> رابط الفيديو (YouTube embed)</Label>
+          <Label className="mb-2 flex items-center gap-2"><Video className="w-4 h-4" /> رابط YouTube (احتياطي)</Label>
           <Input value={videoUrl} onChange={(e) => setVideoUrl(e.target.value)} placeholder="https://www.youtube.com/embed/..." dir="ltr" />
-          <p className="text-xs text-muted-foreground mt-1">استخدم رابط embed وليس watch?v=</p>
+          <p className="text-xs text-muted-foreground mt-1">يستخدم لو مفيش فيديو مرفوع</p>
         </div>
 
         <div>
