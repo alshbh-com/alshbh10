@@ -13,7 +13,7 @@ export const Hero = ({ onCTA }: { onCTA: () => void }) => {
         <div className="max-w-4xl mx-auto text-center animate-fade-up">
           <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-primary/10 border border-primary/30 mb-6">
             <Sparkles className="w-4 h-4 text-primary" />
-            <span className="text-sm font-semibold text-primary">عرض محدود لمدة 48 ساعة</span>
+            <span className="text-sm font-semibold text-primary">عرض محدود لمدة 72 ساعة</span>
           </div>
 
           <h1 className="text-4xl sm:text-6xl md:text-7xl font-black mb-6 leading-tight">
@@ -38,7 +38,7 @@ export const Hero = ({ onCTA }: { onCTA: () => void }) => {
 
             <div className="space-y-3">
               <p className="text-sm text-muted-foreground">العرض ينتهي خلال:</p>
-              <Countdown hours={48} />
+              <Countdown hours={72} />
             </div>
           </div>
         </div>

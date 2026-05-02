@@ -5,7 +5,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { toast } from "sonner";
-import { Loader2, Save, Video, Phone } from "lucide-react";
+import { Loader2, Save, Video, Phone, Upload, Trash2 } from "lucide-react";
 
 interface System {
   id: string;
@@ -19,10 +19,12 @@ interface System {
 
 const AdminSettings = () => {
   const [videoUrl, setVideoUrl] = useState("");
+  const [videoFileUrl, setVideoFileUrl] = useState("");
   const [whatsapp, setWhatsapp] = useState("");
   const [systems, setSystems] = useState<System[]>([]);
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
+  const [uploading, setUploading] = useState(false);
 
   useEffect(() => {
     const load = async () => {
@@ -32,6 +34,7 @@ const AdminSettings = () => {
       ]);
       if (s.data) {
         setVideoUrl(s.data.find((x) => x.key === "video_url")?.value || "");
+        setVideoFileUrl(s.data.find((x) => x.key === "video_file_url")?.value || "");
         setWhatsapp(s.data.find((x) => x.key === "whatsapp_number")?.value || "");
       }
       if (sys.data) setSystems(sys.data as any);
@@ -44,9 +47,43 @@ const AdminSettings = () => {
     setSaving(true);
     const { error: e1 } = await supabase.from("site_settings").upsert({ key: "video_url", value: videoUrl });
     const { error: e2 } = await supabase.from("site_settings").upsert({ key: "whatsapp_number", value: whatsapp });
+    const { error: e3 } = await supabase.from("site_settings").upsert({ key: "video_file_url", value: videoFileUrl });
     setSaving(false);
-    if (e1 || e2) toast.error("فشل الحفظ");
+    if (e1 || e2 || e3) toast.error("فشل الحفظ");
     else toast.success("تم حفظ الإعدادات");
+  };
+
+  const handleVideoUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    if (file.size > 524288000) {
+      toast.error("الحد الأقصى 500 ميجا");
+      return;
+    }
+    setUploading(true);
+    const ext = file.name.split(".").pop();
+    const path = `promo-${Date.now()}.${ext}`;
+    const { error } = await supabase.storage.from("videos").upload(path, file, {
+      cacheControl: "3600",
+      upsert: false,
+      contentType: file.type,
+    });
+    if (error) {
+      setUploading(false);
+      toast.error("فشل الرفع: " + error.message);
+      return;
+    }
+    const { data } = supabase.storage.from("videos").getPublicUrl(path);
+    setVideoFileUrl(data.publicUrl);
+    await supabase.from("site_settings").upsert({ key: "video_file_url", value: data.publicUrl });
+    setUploading(false);
+    toast.success("تم رفع الفيديو ✓");
+  };
+
+  const removeVideoFile = async () => {
+    setVideoFileUrl("");
+    await supabase.from("site_settings").upsert({ key: "video_file_url", value: "" });
+    toast.success("تم حذف الفيديو");
   };
 
   const saveSystem = async (sys: System) => {
@@ -80,10 +117,34 @@ const AdminSettings = () => {
       <div className="bg-gradient-card rounded-2xl p-6 border border-border/50 space-y-4">
         <h2 className="font-black text-lg">إعدادات عامة</h2>
 
+        <div className="space-y-3 p-4 rounded-xl bg-background/50 border border-primary/30">
+          <Label className="flex items-center gap-2 font-bold"><Upload className="w-4 h-4 text-primary" /> رفع فيديو مباشر (الأولوية على YouTube)</Label>
+          {videoFileUrl && (
+            <div className="space-y-2">
+              <video src={videoFileUrl} controls className="w-full rounded-lg max-h-64 bg-black" />
+              <Button onClick={removeVideoFile} variant="destructive" size="sm">
+                <Trash2 className="w-4 h-4 ml-2" /> حذف الفيديو الحالي
+              </Button>
+            </div>
+          )}
+          <div>
+            <Input
+              type="file"
+              accept="video/mp4,video/webm,video/quicktime,video/ogg"
+              onChange={handleVideoUpload}
+              disabled={uploading}
+              className="cursor-pointer"
+            />
+            <p className="text-xs text-muted-foreground mt-1">
+              {uploading ? "جاري الرفع..." : "MP4 / WebM / MOV — حتى 500 ميجا"}
+            </p>
+          </div>
+        </div>
+
         <div>
-          <Label className="mb-2 flex items-center gap-2"><Video className="w-4 h-4" /> رابط الفيديو (YouTube embed)</Label>
+          <Label className="mb-2 flex items-center gap-2"><Video className="w-4 h-4" /> رابط YouTube (احتياطي)</Label>
           <Input value={videoUrl} onChange={(e) => setVideoUrl(e.target.value)} placeholder="https://www.youtube.com/embed/..." dir="ltr" />
-          <p className="text-xs text-muted-foreground mt-1">استخدم رابط embed وليس watch?v=</p>
+          <p className="text-xs text-muted-foreground mt-1">يستخدم لو مفيش فيديو مرفوع</p>
         </div>
 
         <div>
