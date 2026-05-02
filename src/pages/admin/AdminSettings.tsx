@@ -19,10 +19,12 @@ interface System {
 
 const AdminSettings = () => {
   const [videoUrl, setVideoUrl] = useState("");
+  const [videoFileUrl, setVideoFileUrl] = useState("");
   const [whatsapp, setWhatsapp] = useState("");
   const [systems, setSystems] = useState<System[]>([]);
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
+  const [uploading, setUploading] = useState(false);
 
   useEffect(() => {
     const load = async () => {
