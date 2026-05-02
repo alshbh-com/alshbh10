@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import { useNavigate, NavLink, Outlet } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
-import { Ghost, LayoutDashboard, Users, Settings, LogOut, Loader2, BarChart3 } from "lucide-react";
+import { Ghost, LayoutDashboard, Users, Settings, LogOut, Loader2, BarChart3, Wallet } from "lucide-react";
 import { toast } from "sonner";
 
 const AdminLayout = () => {
@@ -64,6 +64,10 @@ const AdminLayout = () => {
             <NavLink to="/admin/dashboard/analytics" className={linkClass}>
               <BarChart3 className="w-5 h-5" />
               <span>الزيارات</span>
+            </NavLink>
+            <NavLink to="/admin/dashboard/debts" className={linkClass}>
+              <Wallet className="w-5 h-5" />
+              <span>المديونيات</span>
             </NavLink>
             <NavLink to="/admin/dashboard/settings" className={linkClass}>
               <Settings className="w-5 h-5" />

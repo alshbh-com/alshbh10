@@ -47,6 +47,77 @@ export type Database = {
         }
         Relationships: []
       }
+      debt_payments: {
+        Row: {
+          amount: number
+          created_at: string
+          debtor_id: string
+          id: string
+          note: string | null
+          paid_at: string
+        }
+        Insert: {
+          amount: number
+          created_at?: string
+          debtor_id: string
+          id?: string
+          note?: string | null
+          paid_at?: string
+        }
+        Update: {
+          amount?: number
+          created_at?: string
+          debtor_id?: string
+          id?: string
+          note?: string | null
+          paid_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "debt_payments_debtor_id_fkey"
+            columns: ["debtor_id"]
+            isOneToOne: false
+            referencedRelation: "debtors"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      debtors: {
+        Row: {
+          created_at: string
+          due_date: string
+          id: string
+          name: string
+          notes: string | null
+          status: string
+          total_amount: number
+          updated_at: string
+          whatsapp: string | null
+        }
+        Insert: {
+          created_at?: string
+          due_date: string
+          id?: string
+          name: string
+          notes?: string | null
+          status?: string
+          total_amount?: number
+          updated_at?: string
+          whatsapp?: string | null
+        }
+        Update: {
+          created_at?: string
+          due_date?: string
+          id?: string
+          name?: string
+          notes?: string | null
+          status?: string
+          total_amount?: number
+          updated_at?: string
+          whatsapp?: string | null
+        }
+        Relationships: []
+      }
       leads: {
         Row: {
           contacted: boolean
