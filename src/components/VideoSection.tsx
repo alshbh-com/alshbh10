@@ -34,15 +34,19 @@ export const VideoSection = () => {
           </h2>
         </div>
 
-        <div className="max-w-4xl mx-auto">
-          <div className="relative aspect-video rounded-2xl overflow-hidden glow-border bg-card shadow-card-soft">
+        <div className={useFile ? "max-w-sm mx-auto" : "max-w-4xl mx-auto"}>
+          <div
+            className={`relative rounded-2xl overflow-hidden glow-border bg-black shadow-card-soft ${
+              useFile ? "aspect-[9/16]" : "aspect-video"
+            }`}
+          >
             {useFile ? (
               <video
                 src={videoFile}
                 controls
                 playsInline
                 preload="metadata"
-                className="absolute inset-0 w-full h-full object-cover bg-black"
+                className="absolute inset-0 w-full h-full object-contain bg-black"
               />
             ) : videoUrl ? (
               <iframe
