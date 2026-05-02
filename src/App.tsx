@@ -11,6 +11,7 @@ import AdminStats from "./pages/admin/AdminStats.tsx";
 import AdminLeads from "./pages/admin/AdminLeads.tsx";
 import AdminSettings from "./pages/admin/AdminSettings.tsx";
 import AdminAnalytics from "./pages/admin/AdminAnalytics.tsx";
+import AdminDebts from "./pages/admin/AdminDebts.tsx";
 
 const queryClient = new QueryClient();
 
@@ -27,6 +28,7 @@ const App = () => (
             <Route index element={<AdminStats />} />
             <Route path="leads" element={<AdminLeads />} />
             <Route path="analytics" element={<AdminAnalytics />} />
+            <Route path="debts" element={<AdminDebts />} />
             <Route path="settings" element={<AdminSettings />} />
           </Route>
           <Route path="*" element={<NotFound />} />
