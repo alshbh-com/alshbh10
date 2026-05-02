@@ -6,13 +6,14 @@ interface CountdownProps {
 
 export const Countdown = ({ hours = 48 }: CountdownProps) => {
   const [target] = useState(() => {
-    const stored = localStorage.getItem("alshbh_countdown");
+    const key = `alshbh_countdown_${hours}`;
+    const stored = localStorage.getItem(key);
     if (stored) {
       const t = parseInt(stored);
       if (t > Date.now()) return t;
     }
     const t = Date.now() + hours * 60 * 60 * 1000;
-    localStorage.setItem("alshbh_countdown", String(t));
+    localStorage.setItem(key, String(t));
     return t;
   });
 
