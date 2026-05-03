@@ -58,6 +58,7 @@ const daysUntil = (d: string) => Math.ceil((new Date(d).getTime() - Date.now()) 
 const AdminDebts = () => {
   const [debtors, setDebtors] = useState<Debtor[]>([]);
   const [payments, setPayments] = useState<Payment[]>([]);
+  const [schedule, setSchedule] = useState<ScheduleItem[]>([]);
   const [loading, setLoading] = useState(true);
   const [openNew, setOpenNew] = useState(false);
   const [openDetails, setOpenDetails] = useState<Debtor | null>(null);
