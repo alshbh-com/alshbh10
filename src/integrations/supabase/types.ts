@@ -82,6 +82,47 @@ export type Database = {
           },
         ]
       }
+      debt_schedule: {
+        Row: {
+          amount: number
+          collected: boolean
+          collected_at: string | null
+          created_at: string
+          debtor_id: string
+          due_date: string
+          id: string
+          note: string | null
+        }
+        Insert: {
+          amount: number
+          collected?: boolean
+          collected_at?: string | null
+          created_at?: string
+          debtor_id: string
+          due_date: string
+          id?: string
+          note?: string | null
+        }
+        Update: {
+          amount?: number
+          collected?: boolean
+          collected_at?: string | null
+          created_at?: string
+          debtor_id?: string
+          due_date?: string
+          id?: string
+          note?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "debt_schedule_debtor_id_fkey"
+            columns: ["debtor_id"]
+            isOneToOne: false
+            referencedRelation: "debtors"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       debtors: {
         Row: {
           created_at: string
