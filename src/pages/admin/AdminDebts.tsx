@@ -76,13 +76,20 @@ const AdminDebts = () => {
   const [payDate, setPayDate] = useState(today());
   const [payNote, setPayNote] = useState("");
 
+  // schedule form
+  const [schedAmount, setSchedAmount] = useState("");
+  const [schedDate, setSchedDate] = useState("");
+  const [schedNote, setSchedNote] = useState("");
+
   const load = async () => {
-    const [d, p] = await Promise.all([
+    const [d, p, s] = await Promise.all([
       supabase.from("debtors").select("*").order("due_date"),
       supabase.from("debt_payments").select("*").order("paid_at", { ascending: false }),
+      supabase.from("debt_schedule").select("*").order("due_date"),
     ]);
     if (d.data) setDebtors(d.data as any);
     if (p.data) setPayments(p.data as any);
+    if (s.data) setSchedule(s.data as any);
     setLoading(false);
   };
   useEffect(() => { load(); }, []);
