@@ -27,6 +27,15 @@ interface Payment {
   paid_at: string;
   note: string | null;
 }
+interface ScheduleItem {
+  id: string;
+  debtor_id: string;
+  due_date: string;
+  amount: number;
+  note: string | null;
+  collected: boolean;
+  collected_at: string | null;
+}
 
 const debtorSchema = z.object({
   name: z.string().trim().min(2, "الاسم قصير").max(100),
