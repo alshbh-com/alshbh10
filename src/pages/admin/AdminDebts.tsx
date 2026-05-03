@@ -170,9 +170,48 @@ const AdminDebts = () => {
     toast.success("تم الحذف"); setOpenDetails(null); load();
   };
 
+  const addSchedule = async () => {
+    if (!openDetails) return;
+    const amt = Number(schedAmount);
+    if (!amt || amt <= 0) { toast.error("مبلغ غير صحيح"); return; }
+    if (!schedDate) { toast.error("حدد تاريخ القسط"); return; }
+    const { error } = await supabase.from("debt_schedule").insert({
+      debtor_id: openDetails.id,
+      amount: amt,
+      due_date: schedDate,
+      note: schedNote || null,
+    });
+    if (error) { toast.error("فشل الحفظ"); return; }
+    toast.success("تم جدولة القسط");
+    setSchedAmount(""); setSchedDate(""); setSchedNote("");
+    load();
+  };
+
+  const deleteSchedule = async (id: string) => {
+    const { error } = await supabase.from("debt_schedule").delete().eq("id", id);
+    if (error) { toast.error("فشل الحذف"); return; }
+    toast.success("تم الحذف"); load();
+  };
+
+  const collectSchedule = async (item: ScheduleItem) => {
+    // mark collected and create matching payment
+    const [{ error: e1 }, { error: e2 }] = await Promise.all([
+      supabase.from("debt_schedule").update({ collected: true, collected_at: today() }).eq("id", item.id),
+      supabase.from("debt_payments").insert({
+        debtor_id: item.debtor_id,
+        amount: item.amount,
+        paid_at: today(),
+        note: item.note ? `قسط: ${item.note}` : `قسط بتاريخ ${item.due_date}`,
+      }),
+    ]);
+    if (e1 || e2) { toast.error("فشل تأكيد التحصيل"); return; }
+    toast.success("تم التحصيل وتسجيل الدفعة"); load();
+  };
+
   if (loading) return <div className="flex justify-center p-12"><Loader2 className="animate-spin text-primary" /></div>;
 
   const detailsPayments = openDetails ? payments.filter(p => p.debtor_id === openDetails.id) : [];
+  const detailsSchedule = openDetails ? schedule.filter(s => s.debtor_id === openDetails.id) : [];
   const detailsTotal = openDetails ? Number(openDetails.total_amount) : 0;
   const detailsPaid = openDetails ? (paidByDebtor[openDetails.id] || 0) : 0;
   const detailsRemaining = Math.max(0, detailsTotal - detailsPaid);
