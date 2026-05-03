@@ -372,6 +372,57 @@ const AdminDebts = () => {
                 </Button>
               </div>
 
+              {/* Schedule (installments by date) */}
+              <div className="bg-gradient-card border border-border/50 rounded-xl p-4 space-y-3">
+                <div className="font-bold text-sm flex items-center gap-2"><CalIcon className="w-4 h-4" /> جدولة الأقساط</div>
+                <div className="grid grid-cols-2 gap-2">
+                  <Input placeholder="المبلغ" type="number" value={schedAmount} onChange={(e) => setSchedAmount(e.target.value)} dir="ltr" />
+                  <Input type="date" value={schedDate} onChange={(e) => setSchedDate(e.target.value)} dir="ltr" />
+                </div>
+                <Input placeholder="ملاحظة (مثلا: قسط شهر 5)" value={schedNote} onChange={(e) => setSchedNote(e.target.value)} maxLength={200} />
+                <Button onClick={addSchedule} variant="outline" className="w-full font-bold">
+                  <Plus className="w-4 h-4 ml-2" /> جدولة قسط
+                </Button>
+
+                {detailsSchedule.length > 0 && (
+                  <div className="space-y-2 pt-2">
+                    {detailsSchedule.map(s => {
+                      const days = daysUntil(s.due_date);
+                      const overdue = !s.collected && days < 0;
+                      const soon = !s.collected && days >= 0 && days <= 1;
+                      return (
+                        <div key={s.id} className={`flex items-center justify-between rounded-lg p-3 text-sm border ${
+                          s.collected ? "bg-success/10 border-success/30" :
+                          overdue ? "bg-destructive/10 border-destructive/30" :
+                          soon ? "bg-secondary/10 border-secondary/30" : "bg-muted/30 border-border/30"
+                        }`}>
+                          <div className="flex-1">
+                            <div className="flex items-center gap-2">
+                              <span className="font-bold">{fmt(Number(s.amount))} ج</span>
+                              {s.collected && <Badge className="bg-success text-success-foreground text-[10px]">تم</Badge>}
+                              {overdue && <Badge variant="destructive" className="text-[10px]">متأخر</Badge>}
+                              {soon && <Badge className="bg-secondary text-secondary-foreground text-[10px]">{days === 0 ? "اليوم" : "بكرة"}</Badge>}
+                            </div>
+                            <div className="text-xs text-muted-foreground mt-1" dir="ltr">{s.due_date}</div>
+                            {s.note && <div className="text-xs mt-1">{s.note}</div>}
+                          </div>
+                          <div className="flex gap-1">
+                            {!s.collected && (
+                              <Button onClick={() => collectSchedule(s)} size="sm" variant="ghost" className="text-success h-8">
+                                <CheckCircle2 className="w-4 h-4 ml-1" /> تحصيل
+                              </Button>
+                            )}
+                            <Button onClick={() => deleteSchedule(s.id)} variant="ghost" size="icon" className="text-destructive h-8 w-8">
+                              <X className="w-4 h-4" />
+                            </Button>
+                          </div>
+                        </div>
+                      );
+                    })}
+                  </div>
+                )}
+              </div>
+
               {/* Payments list */}
               <div>
                 <div className="font-bold text-sm mb-2">سجل الدفعات ({detailsPayments.length})</div>
