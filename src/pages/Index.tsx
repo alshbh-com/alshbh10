@@ -4,6 +4,7 @@ import { Navbar } from "@/components/Navbar";
 import { Hero } from "@/components/Hero";
 import { VideoSection } from "@/components/VideoSection";
 import { SystemsSection } from "@/components/SystemsSection";
+import { ProofsSection } from "@/components/ProofsSection";
 import { WhyUs } from "@/components/WhyUs";
 import { LeadForm } from "@/components/LeadForm";
 import { FinalCTA } from "@/components/FinalCTA";
@@ -30,6 +31,7 @@ const Index = () => {
         <Hero onCTA={() => scrollToForm()} />
         <VideoSection />
         <SystemsSection onSelect={scrollToForm} />
+        <ProofsSection />
         <WhyUs />
         <LeadForm ref={formRef} selected={selected} />
         <FinalCTA onCTA={() => scrollToForm()} />
