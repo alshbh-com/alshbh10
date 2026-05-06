@@ -2,7 +2,7 @@ import { useEffect, useRef, useState } from "react";
 import { track } from "@/lib/analytics";
 import { Navbar } from "@/components/Navbar";
 import { Hero } from "@/components/Hero";
-import { VideoSection } from "@/components/VideoSection";
+
 import { SystemsSection } from "@/components/SystemsSection";
 import { ProofsSection } from "@/components/ProofsSection";
 import { WhyUs } from "@/components/WhyUs";
