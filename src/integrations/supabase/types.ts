@@ -210,6 +210,33 @@ export type Database = {
         }
         Relationships: []
       }
+      system_proofs: {
+        Row: {
+          caption: string | null
+          created_at: string
+          display_order: number
+          id: string
+          image_url: string
+          system_slug: string
+        }
+        Insert: {
+          caption?: string | null
+          created_at?: string
+          display_order?: number
+          id?: string
+          image_url: string
+          system_slug: string
+        }
+        Update: {
+          caption?: string | null
+          created_at?: string
+          display_order?: number
+          id?: string
+          image_url?: string
+          system_slug?: string
+        }
+        Relationships: []
+      }
       systems: {
         Row: {
           created_at: string

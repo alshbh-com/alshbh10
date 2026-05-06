@@ -5,7 +5,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { toast } from "sonner";
-import { Loader2, Save, Video, Phone, Upload, Trash2 } from "lucide-react";
+import { Loader2, Save, Video, Phone, Upload, Trash2, Clock } from "lucide-react";
 
 interface System {
   id: string;
@@ -21,10 +21,19 @@ const AdminSettings = () => {
   const [videoUrl, setVideoUrl] = useState("");
   const [videoFileUrl, setVideoFileUrl] = useState("");
   const [whatsapp, setWhatsapp] = useState("");
+  const [countdownEnd, setCountdownEnd] = useState("");
   const [systems, setSystems] = useState<System[]>([]);
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
   const [uploading, setUploading] = useState(false);
+
+  const toLocalInput = (iso: string) => {
+    if (!iso) return "";
+    const d = new Date(iso);
+    if (isNaN(d.getTime())) return "";
+    const pad = (n: number) => String(n).padStart(2, "0");
+    return `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())}T${pad(d.getHours())}:${pad(d.getMinutes())}`;
+  };
 
   useEffect(() => {
     const load = async () => {
@@ -36,6 +45,7 @@ const AdminSettings = () => {
         setVideoUrl(s.data.find((x) => x.key === "video_url")?.value || "");
         setVideoFileUrl(s.data.find((x) => x.key === "video_file_url")?.value || "");
         setWhatsapp(s.data.find((x) => x.key === "whatsapp_number")?.value || "");
+        setCountdownEnd(toLocalInput(s.data.find((x) => x.key === "countdown_end_at")?.value || ""));
       }
       if (sys.data) setSystems(sys.data as any);
       setLoading(false);
@@ -45,11 +55,13 @@ const AdminSettings = () => {
 
   const saveSettings = async () => {
     setSaving(true);
+    const isoEnd = countdownEnd ? new Date(countdownEnd).toISOString() : "";
     const { error: e1 } = await supabase.from("site_settings").upsert({ key: "video_url", value: videoUrl });
     const { error: e2 } = await supabase.from("site_settings").upsert({ key: "whatsapp_number", value: whatsapp });
     const { error: e3 } = await supabase.from("site_settings").upsert({ key: "video_file_url", value: videoFileUrl });
+    const { error: e4 } = await supabase.from("site_settings").upsert({ key: "countdown_end_at", value: isoEnd });
     setSaving(false);
-    if (e1 || e2 || e3) toast.error("فشل الحفظ");
+    if (e1 || e2 || e3 || e4) toast.error("فشل الحفظ");
     else toast.success("تم حفظ الإعدادات");
   };
 
@@ -150,6 +162,12 @@ const AdminSettings = () => {
         <div>
           <Label className="mb-2 flex items-center gap-2"><Phone className="w-4 h-4" /> رقم الواتساب (دولي بدون +)</Label>
           <Input value={whatsapp} onChange={(e) => setWhatsapp(e.target.value)} placeholder="201061067966" dir="ltr" />
+        </div>
+
+        <div>
+          <Label className="mb-2 flex items-center gap-2"><Clock className="w-4 h-4" /> نهاية العد التنازلي</Label>
+          <Input type="datetime-local" value={countdownEnd} onChange={(e) => setCountdownEnd(e.target.value)} dir="ltr" />
+          <p className="text-xs text-muted-foreground mt-1">حدد تاريخ ووقت انتهاء العرض (يظهر العداد في الصفحة الرئيسية)</p>
         </div>
 
         <Button onClick={saveSettings} disabled={saving} className="bg-gradient-primary text-primary-foreground font-bold">
