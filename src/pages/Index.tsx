@@ -29,7 +29,7 @@ const Index = () => {
       <Navbar />
       <main>
         <Hero onCTA={() => scrollToForm()} />
-        <VideoSection />
+        
         <SystemsSection onSelect={scrollToForm} />
         <ProofsSection />
         <WhyUs />
